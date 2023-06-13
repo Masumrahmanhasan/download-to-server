@@ -24,7 +24,8 @@
         "tightenco/ziggy": "^1.0",
       "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+      "ext-json": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

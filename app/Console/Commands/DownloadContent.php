@@ -7,6 +7,7 @@ use DOMDocument;
 use DOMXPath;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -30,7 +31,6 @@ class DownloadContent extends Command
 
     /**
      * Execute the console command.
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
@@ -43,49 +43,47 @@ class DownloadContent extends Command
 
         $content_url = $content->platform->domain . $content->url;
 
+
         if ($content->platform->domain === 'https://akw.to/') {
+            $process = new Process(["node", "scrape.js", $content_url, $content->download_type, $content->media_type]);
+            $process->setWorkingDirectory(base_path());
+            $process->run();
 
-            if($content->media_type === 'series') {
-                $process = new Process(["node", "scrape.js", $content_url]);
-                $process->setWorkingDirectory(base_path());
-                $process->run();
+            if ($process->isSuccessful()) {
+                $output = $process->getOutput();
+                $links = json_decode($output, true);
 
-                if ($process->isSuccessful()) {
-                    $output = $process->getOutput();
-                    $links = json_decode($output, true);
-                    foreach ($links as $link) {
-                        $download = new Process(
-                            [
-                                'node',
-                                'download.js',
-                                '--host=' . $host,
-                                '--username=' . $user,
-                                '--password=' . $password,
-                                '--path=' . $path,
-                                '--content=' . $link,
-                            ]
-                        );
-                        $download->setWorkingDirectory(base_path());
-                        $download->setPty(true);
-                        $download->enableOutput();
-                        $download->run(function ($type, $buffer) {
-                            if (Process::ERR === $type) {
-                                echo 'ERR > ' . $buffer;
-                            } else {
-                                echo 'OUT > ' . $buffer;
-                            }
-                        });
+                Log::info($links);
+                foreach ($links as $link) {
+                    $download = new Process(
+                        [
+                            'node',
+                            'download.js',
+                            '--host=' . $host,
+                            '--username=' . $user,
+                            '--password=' . $password,
+                            '--path=' . $path,
+                            '--content=' . $link,
+                        ]
+                    );
+                    $download->setWorkingDirectory(base_path());
+                    $download->setPty(true);
+                    $download->enableOutput();
+                    $download->run(function ($type, $buffer) {
+                        if (Process::ERR === $type) {
+                            echo 'ERR > ' . $buffer;
+                        } else {
+                            echo 'OUT > ' . $buffer;
+                        }
+                    });
 
-                    }
-
-                } else {
-                    // Handle the case when the request was not successful
-                    $output = $process->getErrorOutput();
-                    return 1;
                 }
+
+            } else {
+                // Handle the case when the request was not successful
+                $output = $process->getErrorOutput();
+                return 1;
             }
-
-
 
         } else {
 

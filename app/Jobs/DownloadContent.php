@@ -17,8 +17,10 @@ class DownloadContent implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $content;
+
     /**
      * Create a new job instance.
+     * @param Content $content
      */
     public function __construct(Content $content)
     {
@@ -28,7 +30,7 @@ class DownloadContent implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle()
     {
         $exitCode = Artisan::call('app:download-content', [
             'content_id' => $this->content->id,

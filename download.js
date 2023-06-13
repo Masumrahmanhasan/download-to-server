@@ -16,8 +16,7 @@ const parseArguments = () => {
 
 const download = async () => {
     const { host, username, password, path, content } = parseArguments();
-    console.log(content);
-
+        console.log(parseArguments())
     if (!host || !username || !password || !path || !content) {
         console.error('Please provide the host, username, password, path and content as arguments.');
         return;
@@ -41,5 +40,5 @@ const download = async () => {
     }
 };
 
-download();
+download().then(r => r);
 
