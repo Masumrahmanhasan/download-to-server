@@ -18,6 +18,9 @@ class DownloadContent implements ShouldQueue
 
     public $content;
 
+    public $timeout = 360;
+
+
     /**
      * Create a new job instance.
      * @param Content $content

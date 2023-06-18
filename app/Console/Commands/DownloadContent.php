@@ -68,6 +68,7 @@ class DownloadContent extends Command
                     );
                     $download->setWorkingDirectory(base_path());
                     $download->setPty(true);
+                    $download->setTimeout(3600);
                     $download->enableOutput();
                     $download->run(function ($type, $buffer) {
                         if (Process::ERR === $type) {
