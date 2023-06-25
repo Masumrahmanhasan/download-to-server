@@ -30,8 +30,7 @@ class CheckSeriesEpisode implements ShouldQueue
     {
         $series = Content::with(['platform', 'server'])->where('media_type', 'series')->get();
 
-        if(count($series) > 0) {
-
+        if ($series->isNotEmpty()) {
             $count = 0;
             foreach ($series as $latest) {
                 $server = $latest->server;
@@ -44,55 +43,59 @@ class CheckSeriesEpisode implements ShouldQueue
 
                 if ($latest->platform->domain === 'https://akw.to/') {
                     $urls = $this->fetchUrls($content_url);
-                    Log::info('total-url', [$urls]);
-                    return $download = $this->downloadEpisodes($host, $user, $password, $path, $urls);
+                    $downloaded = $this->downloadEpisodes($host, $user, $password, $path, $urls);
+                    if ($downloaded) {
+                        $count++;
+                    }
                 }
-                $count++;
             }
             Log::info('series-check-count', [$count]);
+        } else {
+            Log::info('Series Not Found');
         }
-        return 'Series Not Found';
     }
 
-    private function fetchUrls($content_url) {
+    private function fetchUrls($content_url)
+    {
         $process = new Process(["node", "scrape.js", $content_url, 'latest', 'series']);
         $process->setWorkingDirectory(base_path());
-        $process->setTimeout(3600);
+        $process->setTimeout(360);
         $process->run();
+
         if ($process->isSuccessful()) {
             $output = $process->getOutput();
             Log::info('total-output', [$output]);
-            return $links = json_decode($output, true);
+            return json_decode($output, true);
         }
         Log::info('error-message', [$process->getErrorOutput()]);
         return false;
     }
 
-    private function downloadEpisodes($host, $user, $password, $path, $urls)
+    public function downloadEpisodes($host, $user, $password, $path, $urls)
     {
-        if($urls !== null && count($urls) > 0) {
+        if ($urls !== null && count($urls) > 0) {
             foreach ($urls as $link) {
-                $download = new Process(
-                    [
-                        'node',
-                        'download.js',
-                        '--host=' . $host,
-                        '--username=' . $user,
-                        '--password=' . $password,
-                        '--path=' . $path,
-                        '--content=' . $link,
-                    ]
-                );
+                $download = new Process([
+                    'node',
+                    'download.js',
+                    '--host=' . $host,
+                    '--username=' . $user,
+                    '--password=' . $password,
+                    '--path=' . $path,
+                    '--content=' . $link,
+                ]);
                 $download->setWorkingDirectory(base_path());
                 $download->setPty(true);
-                $download->setTimeout(3600);
+                $download->setTimeout(360);
                 $download->enableOutput();
                 $download->run();
 
                 Log::info('download-error', [$download->getErrorOutput()]);
-                return true;
             }
+
+            return true; // All episodes downloaded successfully
         }
-        return false;
+
+        return false; // No episodes to download
     }
 }
