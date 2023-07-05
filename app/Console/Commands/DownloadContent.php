@@ -3,15 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Content;
-use DOMDocument;
-use DOMXPath;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\InputStream;
 
 class DownloadContent extends Command
 {

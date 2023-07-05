@@ -74,13 +74,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('servers', [ServerController::class, 'store'])
             ->name('servers.save');
 
-        // servercontroller edit delete view
+        // server controller edit delete view
         Route::get('servers/{id}/edit', [ServerController::class, 'show'])->name('servers.edit');
 
         Route::post('servers/{id}/update', [ServerController::class, 'update'])->name('servers.update');
 
         Route::delete('servers/{id}', [ServerController::class, 'delete'])->name('servers.delete');
-        // servercontroller edit delete view
+        // server controller edit delete view
 
     });
 

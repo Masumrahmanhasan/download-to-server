@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('app:check-series-episodes-command')->everyMinute();
+//         $schedule->command('app:check-series-episodes-command')->everyMinute();
+         $schedule->command('app:check-latest-movies-command')->everyMinute();
     }
 
     /**
