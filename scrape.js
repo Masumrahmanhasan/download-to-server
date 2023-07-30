@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
 const axios = require('axios')
-const url = process.argv[2]
+const url = process.argv[2] ?? ''
 const type = process.argv[3]
 const media = process.argv[4] ?? 'movie'
 

@@ -33,7 +33,7 @@ class ContentController extends Controller
             'Contents/Create',
             [
                 'platforms' => Platform::all(),
-                'servers' => Server::all(),
+                'servers' => auth()->user()->servers,
 
             ]
         );
@@ -46,7 +46,7 @@ class ContentController extends Controller
             [
                 'content' => Content::with("platform", "server")->find($request->id),
                 'platforms' => Platform::all(),
-                'servers' => Server::all(),
+                'servers' => auth()->user()->servers,
             ]
         );
 
