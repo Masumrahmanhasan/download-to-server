@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentRelationManager extends RelationManager
 {
-    protected static string $relationship = 'payment';
+    protected static string $relationship = 'payments';
 
     protected static ?string $recordTitleAttribute = 'id';
 
@@ -28,23 +28,23 @@ class PaymentRelationManager extends RelationManager
                 ->searchable()
                 ->options(User::all()->pluck('name', 'id')),
 
-                Forms\Components\TextInput::make('package_id')           
-                ->required()
-                ->maxLength(255),
-                
-                Forms\Components\TextInput::make('status')           
+                Forms\Components\TextInput::make('package_id')
                 ->required()
                 ->maxLength(255),
 
-                Forms\Components\TextInput::make('subscription_id')           
+                Forms\Components\TextInput::make('status')
                 ->required()
                 ->maxLength(255),
 
-                Forms\Components\TextInput::make('payer_id')           
+                Forms\Components\TextInput::make('subscription_id')
                 ->required()
                 ->maxLength(255),
 
-                Forms\Components\TextInput::make('next_billing_time')           
+                Forms\Components\TextInput::make('payer_id')
+                ->required()
+                ->maxLength(255),
+
+                Forms\Components\TextInput::make('next_billing_time')
                 ->required()
                 ->maxLength(255),
 
@@ -70,11 +70,11 @@ class PaymentRelationManager extends RelationManager
                 // Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                //Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }    
+    }
 }

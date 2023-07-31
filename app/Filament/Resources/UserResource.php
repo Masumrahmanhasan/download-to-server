@@ -14,8 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Forms\Components\Select;
-
-
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -28,25 +27,26 @@ class UserResource extends Resource
         return $form->columns(1)
             ->schema([
                 Forms\Components\TextInput::make('name')
-                ->required()
-                ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('email')
-                ->required()
-                ->maxLength(255),
-                Forms\Components\TextInput::make('payment_id')
-                ->required()
-                ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
+
 
                 // Forms\Components\TextInput::make('email_verified_at')
                 // ->required()
                 // ->maxLength(255),
 
                 Forms\Components\TextInput::make('password')
-                ->required()
-                ->maxLength(255),
+                    ->password()
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required()
+                    ->maxLength(255),
 
-                
+
             ]);
     }
 
@@ -70,7 +70,6 @@ class UserResource extends Resource
 
 
             ])
-
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
